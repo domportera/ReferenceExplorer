@@ -59,6 +59,21 @@ namespace ReferenceViewer
             }
         }
 
+        // courtesy of https://stackoverflow.com/a/20008954/3505336
+        static Type GetTypeByName(string name)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Reverse())
+            {
+                var tt = assembly.GetType(name);
+                if (tt != null)
+                {
+                    return tt;
+                }
+            }
+
+            return null;
+        }
+
         private static void Find(Data data, params Object[] selectedObjects)
         {
 
@@ -78,7 +93,7 @@ namespace ReferenceViewer
                         foreach (var subAssetData in assetData.subAssets)
                         {
 
-                            var type = Types.GetType(subAssetData.typeName, "UnityEngine.dll");
+                            var type = GetTypeByName(subAssetData.typeName);
 
                             if (subAssetData.guid == guid && type == selectedObject.GetType())
                             {
@@ -100,7 +115,7 @@ namespace ReferenceViewer
                     {
                         foreach (var subAssetData in assetData.subAssets)
                         {
-                            var type = Types.GetType(subAssetData.typeName, "UnityEngine.dll");
+                            var type = GetTypeByName(subAssetData.typeName);
                             var tex = AssetPreview.GetMiniTypeThumbnail(type);
 
                             var item =
